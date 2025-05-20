@@ -1,3 +1,8 @@
+<h3>{{title}}</h3>
+
+<button class="btn btn-primary">Crear Usuario</button>
+
+
 @if (users.length == 0) {
 <div class="alert alert-warning">No hay registros en el sistema!</div>
 } @else {
@@ -22,15 +27,12 @@
             <td> {{user.email}} </td>
             <td> {{user.username}} </td>
             <td>
-                <button class="btn btn-danger btn-sm"
-                (click)="onRemoveUser(user.id)"
-                >
+                <button class="btn btn-danger btn-sm" (click)="onRemoveUser(user.id)">
                     remove
                 </button>
             </td>
             <td>
-                <button class="btn btn-info btn-sm"
-                (click)="onSelectedUser(user)">
+                <button class="btn btn-info btn-sm" (click)="onSelectedUser(user)">
                     update
                 </button>
             </td>
