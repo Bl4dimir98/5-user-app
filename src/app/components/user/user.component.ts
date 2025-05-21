@@ -32,6 +32,6 @@ export class UserComponent {
   }
 
   onSelectedUser(user: User): void {
-    this.sharingDataService.selectdUserEventEmitter.emit(user);
+    this.router.navigate(['/users/edit', user.id], { state: { user } });
   }
 }
