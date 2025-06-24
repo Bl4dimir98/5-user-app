@@ -6,6 +6,8 @@ import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from "./navbar/navbar.component";
 import { SharingDataService } from '../services/sharing-data.service';
 import { AuthService } from '../services/auth.service';
+import { Store } from '@ngrx/store';
+import { add, find, findAll, remove, setPaginator, update } from '../store/users.acctions';
 
 @Component({
   selector: 'user-app',
@@ -16,27 +18,25 @@ import { AuthService } from '../services/auth.service';
 })
 export class UserAppComponent implements OnInit {
 
-  title: string = 'Listado de usuarios!';
-
   users: User[] = [];
   paginator: any = {};
+  user!: User;
 
   constructor(
+    private store: Store<{ users: any }>,
     private router: Router,
     private sharingDataService: SharingDataService,
     private authService: AuthService,
     private service: UserService,
     private route: ActivatedRoute) {
+    this.store.select('users').subscribe(state => {
+      this.users = state.users;
+      this.paginator = state.paginator;
+      this.user = state.user;
+    })
   }
 
   ngOnInit(): void {
-    // this.service.findAll().subscribe(users => this.users = users);
-
-    // this.route.paramMap.subscribe(params => {
-    //   const page = +(params.get("page") || '0');
-    //   console.log(page);
-    //   this.service.findAllPageable(page).subscribe(pageable => this.users = pageable.content as User[]);
-    // });
     this.addUser();
     this.removeUser();
     this.findUserById();
@@ -82,15 +82,19 @@ export class UserAppComponent implements OnInit {
 
   pageUsersEvent() {
     this.sharingDataService.pageUsersEventEmmiter.subscribe(pageable => {
-      this.users = pageable.users;
-      this.paginator = pageable.paginator;
+      // this.users = pageable.users;
+      // this.paginator = pageable.paginator;
+      this.store.dispatch(findAll({ users: pageable.users }));
+      this.store.dispatch(setPaginator({ paginator: pageable.paginator }));
     });
   }
 
   findUserById(): void {
     this.sharingDataService.findUserByIdEventeEmmiter.subscribe(id => {
-      const user = this.users.find(user => user.id == id);
-      this.sharingDataService.selectUserEventeEmmiter.emit(user);
+
+      // const user = this.users.find(user => user.id == id);
+      this.store.dispatch(find({ id }))
+      this.sharingDataService.selectUserEventeEmmiter.emit(this.user);
     })
   }
 
@@ -99,8 +103,9 @@ export class UserAppComponent implements OnInit {
       if (user.id > 0) {
         this.service.update(user).subscribe(
           {
-            next: (userUpdate) => {
-              this.users = this.users.map(u => (u.id == userUpdate.id) ? { ...userUpdate } : u);
+            next: (userUpdated) => {
+              // this.users = this.users.map(u => (u.id == userUpdate.id) ? { ...userUpdate } : u);
+              this.store.dispatch(update({ userUpdated }));
               this.router.navigate(['/users'], {
                 state: {
                   users: this.users,
@@ -125,8 +130,8 @@ export class UserAppComponent implements OnInit {
           {
             next: (userNew) => {
               console.log(userNew);
-              this.users = [... this.users, { ...userNew }];
-
+              // this.users = [... this.users, { ...userNew }];
+              this.store.dispatch(add({ userNew }));
               this.router.navigate(['/users'], {
                 state: {
                   users: this.users,
@@ -166,7 +171,8 @@ export class UserAppComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           this.service.remove(id).subscribe(() => {
-            this.users = this.users.filter(user => user.id != id);
+            // this.users = this.users.filter(user => user.id != id);
+            this.store.dispatch(remove({ id }));
             this.router.navigate(['/users/create'], { skipLocationChange: true }).then(() => {
               this.router.navigate(['/users'], {
                 state: {
