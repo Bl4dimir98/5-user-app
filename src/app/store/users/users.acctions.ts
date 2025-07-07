@@ -1,5 +1,5 @@
 import { createAction, props } from "@ngrx/store";
-import { User } from "../models/user";
+import { User } from "../../models/user";
 
 export const load = createAction('load', props<{ page: number }>());
 
@@ -17,5 +17,5 @@ export const remove = createAction('remove', props<{ id: number }>());
 export const removeSuccess = createAction('removeSuccess', props<{ id: number }>());
 
 
-export const setErrors = createAction('setErrors', props<{  userForm: User,errors: any }>());
+export const setErrors = createAction('setErrors', props<{ userForm: User, errors: any }>());
 

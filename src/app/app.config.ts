@@ -5,9 +5,9 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tokenInterceptor } from './interceptors/token.interceptor';
 import { provideStore } from '@ngrx/store';
-import { usersReducer } from './store/users.reducer';
+import { usersReducer } from './store/users/users.reducer';
 import { provideEffects } from '@ngrx/effects';
-import { UserEffects } from './store/users.effects';
+import { UserEffects } from './store/users/users.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
