@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UserService {
 
-  private users: User[] = []
+  private users: User[] = [];
 
   private url: string = 'http://localhost:8080/api/users';
 
@@ -19,7 +19,7 @@ export class UserService {
   }
 
   findAllPageable(page: number): Observable<any> {
-    return this.http.get<any>(`${this.url}/page/${page}`)
+    return this.http.get<any[]>(`${this.url}/page/${page}`)
   }
 
   findById(id: number): Observable<User> {
